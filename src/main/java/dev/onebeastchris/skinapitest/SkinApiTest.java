@@ -7,6 +7,7 @@ import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCommandsEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.api.skin.SkinData;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -14,11 +15,13 @@ import java.util.UUID;
  * <ul>
  *     <li>{@code skin <java name or uuid> [player]} - apply a Java player's skin</li>
  *     <li>{@code cone [player]}, {@code pyramid [player]}, {@code sphere [player]} - turn into a shape</li>
+ *     <li>{@code brainrot <sahur|tralalero> [player]} - turn into a brainrot meme</li>
  * </ul>
  * The optional player (a Bedrock or Java username of an online Geyser player) defaults to yourself.
  * The skin is sent to every online Geyser connection, so all Bedrock players see the change.
  */
 public class SkinApiTest implements Extension {
+    private static final String BRAINROT_IDS = String.join("|", Arrays.stream(Brainrot.values()).map(Brainrot::id).toList());
 
     @Subscribe
     public void onDefineCommands(GeyserDefineCommandsEvent event) {
@@ -47,6 +50,35 @@ public class SkinApiTest implements Extension {
                     apply(target, skinData);
                     source.sendMessage("Applied the skin of " + args[0] + " to " + target.bedrockUsername() + ".");
                 });
+            })
+            .build());
+
+        event.register(Command.<GeyserConnection>builder(this)
+            .source(GeyserConnection.class)
+            .name("brainrot")
+            .description("Turn into a brainrot meme: brainrot <" + BRAINROT_IDS + "> [player]")
+            .playerOnly(true)
+            .bedrockOnly(true)
+            .executor((source, command, args) -> {
+                Brainrot brainrot = args.length < 1 ? null : Brainrot.byId(args[0]);
+                if (brainrot == null) {
+                    source.sendMessage("Usage: /skinapitest brainrot <" + BRAINROT_IDS + "> [player]");
+                    return;
+                }
+                GeyserConnection target = target(source, args, 1);
+                if (target == null) {
+                    return;
+                }
+                FaceAnimation face = brainrot.faceAnimation();
+                if (face == null) {
+                    apply(target, brainrot.model().build());
+                } else {
+                    CubeModel model = brainrot.model();
+                    for (GeyserConnection viewer : geyserApi().onlineConnections()) {
+                        AnimatedSkinSender.send(viewer, target.javaUuid(), model, face);
+                    }
+                }
+                source.sendMessage(target.bedrockUsername() + " is now " + brainrot.id() + ".");
             })
             .build());
 

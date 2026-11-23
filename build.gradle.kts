@@ -14,6 +14,8 @@ repositories {
 
 dependencies {
     compileOnly("org.geysermc.geyser:api:$geyserApiVersion")
+    // Internals, for skin animations the skin API can't send
+    compileOnly("org.geysermc.geyser:core:$geyserApiVersion")
 }
 
 java {
