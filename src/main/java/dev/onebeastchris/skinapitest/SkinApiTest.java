@@ -26,6 +26,7 @@ public class SkinApiTest implements Extension {
             .source(GeyserConnection.class)
             .name("skin")
             .description("Apply a Java player's skin: skin <java name or uuid> [player]")
+            .playerOnly(true)
             .bedrockOnly(true)
             .executor((source, command, args) -> {
                 if (args.length < 1) {
@@ -54,6 +55,7 @@ public class SkinApiTest implements Extension {
                 .source(GeyserConnection.class)
                 .name(shape.id())
                 .description("Turn into a " + shape.id() + ": " + shape.id() + " [player]")
+                .playerOnly(true)
                 .bedrockOnly(true)
                 .executor((source, command, args) -> {
                     GeyserConnection target = target(source, args, 0);
