@@ -1,0 +1,7 @@
+id: skinapitest
+name: SkinApiTest
+main: dev.onebeastchris.skinapitest.SkinApiTest
+# sendSkin was added in 2.8.3
+api: 2.8.3
+version: ${version}
+authors: [onebeastchris]
